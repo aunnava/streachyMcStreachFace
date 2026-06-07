@@ -21,7 +21,6 @@ export class ExtrudeController {
     constructor(ctx: SceneContext, selection: SelectionController) {
         this.ctx = ctx;
         this.selection = selection;
-
         window.addEventListener('keydown', this.onKeyDown);
         ctx.renderer.domElement.addEventListener('pointermove', this.onPointerMove);
     }

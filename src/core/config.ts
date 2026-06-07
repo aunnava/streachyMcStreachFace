@@ -13,3 +13,12 @@ export const extrudeConfig={
     minFactor:0.2,
 } as const;
 
+export const measureConfig={
+    toggleKey:'m',
+    cmPerUnit:100,
+    decimals:1,
+    lineColor:0x1d6fff,
+    markerColor:0xff3b30,
+    liftFactor:0.003,
+} as const;
+

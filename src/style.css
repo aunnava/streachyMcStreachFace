@@ -332,3 +332,22 @@ code {
   color: #888;
   cursor: not-allowed;
 }
+
+.measure-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.measure-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(20, 22, 28, 0.82);
+  color: #fff;
+  font: 12px/1.2 system-ui, sans-serif;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
