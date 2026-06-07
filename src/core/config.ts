@@ -6,10 +6,3 @@ export const sceneConfig={
     lightColor:0xffffff
 } as const;
 
-export const outlineConfig={
-    visibleEdgeColor:0xffd400,
-    hiddenEdgecolor:0x665600,
-    edgeStrength:4,
-    edgeThickness:1,
-    edgeGlow:0,
-} as const;

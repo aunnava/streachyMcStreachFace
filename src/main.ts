@@ -2,10 +2,9 @@ import './style.css';
 import * as THREE from 'three';
 import { SceneContext } from './core/SceneContext';
 import { ControlPanel } from './ui/ControlPanel';
-import { createScene } from './scene';
+import { createScene } from './core/scene';
 import { pickFile } from './ui/filePicker';
 import {  ModelLoader } from './loader/ModelLoader';
-import { FacePicker } from './features/FacePicker';
 import { SelectionController } from './features/SelectionController';
 
 
@@ -15,9 +14,8 @@ const world=createScene(ctx.scene);
 const panel=new ControlPanel();
 
 const timer=new THREE.Timer();
-const picker =new FacePicker(ctx.camera);
 
-const selectionCont=new SelectionController(ctx,picker);
+const selectionCont=new SelectionController(ctx);
 const modelLoader=new ModelLoader(ctx.scene);
 const importButton=panel.addButton("Import 3D Model",async()=>{
     const file=await pickFile('.glb,.gltf');
