@@ -323,6 +323,12 @@ code {
   cursor: pointer;
 }
 
-.control-panel button:hover {
+.control-panel button:hover:not(:disabled) {
   background: #fff;
+}
+
+.control-panel button:disabled {
+  opacity: 0.45;
+  color: #888;
+  cursor: not-allowed;
 }

@@ -16,4 +16,16 @@ export class ModelLoader{
             URL.revokeObjectURL(url);
         }
     }
+
+    unload(model:THREE.Object3D):void{
+        this.scene.remove(model);
+        model.traverse((obj)=>{
+            const mesh=obj as THREE.Mesh;
+            if(!mesh.isMesh) return;
+            mesh.geometry.dispose();
+            const mat=mesh.material;
+            if(Array.isArray(mat)) mat.forEach((m)=>m.dispose());
+            else mat.dispose();
+        });
+    }
 }

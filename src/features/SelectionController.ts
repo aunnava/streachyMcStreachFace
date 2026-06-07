@@ -11,13 +11,13 @@ export class SelectionController {
     private readonly raycaster = new THREE.Raycaster();
     private readonly gizmo: TransformControls;
     private dragging = false;
+    onChange?: (selected: THREE.Object3D | null) => void;
     constructor(ctx: SceneContext) {
         this.ctx = ctx;
 
         this.gizmo = new TransformControls(ctx.camera, ctx.renderer.domElement);
         this.gizmo.size = 0.5;
         this.gizmo.addEventListener('dragging-changed', (e) => {
-            // don't let orbit controls fight the gizmo while dragging
             ctx.controls.enabled = !e.value;
             if (e.value) this.dragging = true;
         });
@@ -30,8 +30,21 @@ export class SelectionController {
         this.targets.push(object);
     }
 
+    get selected(): THREE.Object3D | null {
+        return this.selectedRoot;
+    }
+
+    setGizmoEnabled(enabled: boolean): void {
+        this.gizmo.enabled = enabled;
+    }
+
+    removeModel(model: THREE.Object3D): void {
+        const i = this.targets.indexOf(model);
+        if (i !== -1) this.targets.splice(i, 1);
+        if (this.selectedRoot === model) this.deselect();
+    }
+
     private onPointerUp = (e: PointerEvent): void => {
-        //ignoring all  other clicks except left click
         if (e.button !== 0) return;
  if (this.dragging) {
             this.dragging = false;
@@ -62,12 +75,14 @@ export class SelectionController {
         this.selectedRoot = root;
         this.gizmo.attach(root);
         console.log('selected', root.name || root.uuid);
+        this.onChange?.(root);
     }
 
     private deselect(): void {
         this.selectedRoot = null;
         this.gizmo.detach();
         console.log('deselected');
+        this.onChange?.(null);
     }
 }
 

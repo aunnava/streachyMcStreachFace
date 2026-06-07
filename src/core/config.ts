@@ -6,3 +6,10 @@ export const sceneConfig={
     lightColor:0xffffff
 } as const;
 
+export const extrudeConfig={
+    toggleKey:'e',
+    stepPixels:40,
+    stepFactor:0.15,
+    minFactor:0.2,
+} as const;
+

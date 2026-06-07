@@ -6,6 +6,8 @@ import { createScene } from './core/scene';
 import { pickFile } from './ui/filePicker';
 import {  ModelLoader } from './loader/ModelLoader';
 import { SelectionController } from './features/SelectionController';
+import { ExtrudeController } from './features/ExtrudeController';
+import { TextureController } from './features/TextureController';
 
 
 const canvas=document.querySelector<HTMLCanvasElement>('#scene')!;
@@ -16,6 +18,9 @@ const panel=new ControlPanel();
 const timer=new THREE.Timer();
 
 const selectionCont=new SelectionController(ctx);
+const textureCont=new TextureController(selectionCont);
+const extrudeCont=new ExtrudeController(ctx,selectionCont);
+extrudeCont.onDeform=(model)=>textureCont.reproject(model);
 const modelLoader=new ModelLoader(ctx.scene);
 const importButton=panel.addButton("Import 3D Model",async()=>{
     const file=await pickFile('.glb,.gltf');
@@ -24,14 +29,37 @@ const importButton=panel.addButton("Import 3D Model",async()=>{
     try{
         const model=await modelLoader.loadFile(file);
         selectionCont.addModel(model);
-
     }catch(err)
     {
         console.error('failed to load model',err);
-    }finally{
         importButton.disabled=false;
     }
 });
+
+const deleteButton=panel.addButton("Delete Model",()=>{
+    const model=selectionCont.selected;
+    if(!model) return;
+    selectionCont.removeModel(model);
+    modelLoader.unload(model);
+    importButton.disabled=false;
+});
+deleteButton.disabled=true;
+
+const textureButton=panel.addButton("Apply Texture",async()=>{
+    const file=await pickFile('image/*');
+    if(!file) return;
+    try{
+        await textureCont.applyTexture(file);
+    }catch(err){
+        console.error('failed to apply texture',err);
+    }
+});
+textureButton.disabled=true;
+
+selectionCont.onChange=(sel)=>{
+    deleteButton.disabled=sel===null;
+    textureButton.disabled=sel===null;
+};
 
 ctx.renderer.setAnimationLoop((time)=>{
     timer.update(time);
