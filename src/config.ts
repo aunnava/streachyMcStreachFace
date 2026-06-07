@@ -5,3 +5,11 @@ export const sceneConfig={
     axisZColor:0x5fa55f,
     lightColor:0xffffff
 } as const;
+
+export const outlineConfig={
+    visibleEdgeColor:0xffd400,
+    hiddenEdgecolor:0x665600,
+    edgeStrength:4,
+    edgeThickness:1,
+    edgeGlow:0,
+} as const;
