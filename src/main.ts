@@ -62,7 +62,15 @@ const textureButton=panel.addButton("Apply Texture",async()=>{
 });
 textureButton.disabled=true;
 
-const measureButton=panel.addButton("Measure",()=>{
+const extrudeButton=panel.addButton("Extrude (E)",()=>{
+    extrudeCont.setActive(!extrudeCont.active);
+});
+extrudeButton.disabled=true;
+extrudeCont.onModeChange=(on)=>{
+    extrudeButton.textContent=on?"Extruding… (Esc)":"Extrude (E)";
+};
+
+const measureButton=panel.addButton("Measure (M)",()=>{
     measureCont.setActive(!measureCont.active);
 });
 measureButton.disabled=true;
@@ -73,8 +81,10 @@ measureCont.onModeChange=(on)=>{
 selectionCont.onChange=(sel)=>{
     deleteButton.disabled=sel===null;
     textureButton.disabled=sel===null;
+    extrudeButton.disabled=sel===null;
     measureButton.disabled=sel===null;
     if(sel===null){
+        if(extrudeCont.active) extrudeCont.setActive(false);
         if(measureCont.active) measureCont.setActive(false);
         measureCont.clear();
     }

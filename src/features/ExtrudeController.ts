@@ -9,7 +9,7 @@ export class ExtrudeController {
     private readonly selection: SelectionController;
     private readonly deformers = new WeakMap<THREE.Object3D, ModelDeformer>();
 
-    private active = false;
+    private activeMode = false;
     private target: THREE.Object3D | null = null;
     private deformer: ModelDeformer | null = null;
     private startX = 0;
@@ -17,6 +17,16 @@ export class ExtrudeController {
     private lastPointerX = 0;
 
     onDeform?: (model: THREE.Object3D) => void;
+    onModeChange?: (active: boolean) => void;
+
+    get active(): boolean {
+        return this.activeMode;
+    }
+
+    setActive(on: boolean): void {
+        if (on) this.enter();
+        else this.exit();
+    }
 
     constructor(ctx: SceneContext, selection: SelectionController) {
         this.ctx = ctx;
@@ -28,7 +38,7 @@ export class ExtrudeController {
     private onKeyDown = (e: KeyboardEvent): void => {
         if (e.key === 'Escape') { this.exit(); return; }
         if (e.key.toLowerCase() !== extrudeConfig.toggleKey) return;
-        if (this.active) this.exit();
+        if (this.activeMode) this.exit();
         else this.enter();
     };
 
@@ -46,24 +56,26 @@ export class ExtrudeController {
         this.deformer = deformer;
         this.baseFactor = deformer.factor;
         this.startX = this.lastPointerX;
-        this.active = true;
+        this.activeMode = true;
 
         this.ctx.controls.enabled = false;
         this.selection.setGizmoEnabled(false);
+        this.onModeChange?.(true);
     }
 
     private exit(): void {
-        if (!this.active) return;
-        this.active = false;
+        if (!this.activeMode) return;
+        this.activeMode = false;
         this.target = null;
         this.deformer = null;
         this.ctx.controls.enabled = true;
         this.selection.setGizmoEnabled(true);
+        this.onModeChange?.(false);
     }
 
     private onPointerMove = (e: PointerEvent): void => {
         this.lastPointerX = e.clientX;
-        if (!this.active || !this.deformer || !this.target) return;
+        if (!this.activeMode || !this.deformer || !this.target) return;
 
         if (this.selection.selected !== this.target) { this.exit(); return; }
 
