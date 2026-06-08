@@ -1,3 +1,5 @@
+// all configureables live here
+
 export const sceneConfig={
     backgroundColor:0xdedede,
     gridColor:0xb5b5b5,

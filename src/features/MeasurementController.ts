@@ -3,6 +3,7 @@ import { SceneContext } from '../core/SceneContext';
 import { SelectionController } from './SelectionController';
 import { measureConfig } from '../core/config';
 
+//Store the triangle and its barycentric point instead of the 3D point.
 interface Seed {
     mesh: THREE.Mesh;
     a: number;
@@ -13,11 +14,13 @@ interface Seed {
     w2: number;
 }
 
+//Lable and its 3D anchor point
 interface Anchor {
     el: HTMLDivElement;
     local: THREE.Vector3;
 }
 
+//Click on any surface to get measurements to that point on that surface. Use M to enter and exit measurement mode.
 export class MeasurementController {
     private readonly ctx: SceneContext;
     private readonly selection: SelectionController;
@@ -49,7 +52,7 @@ export class MeasurementController {
     }
 
     setActive(on: boolean): void {
-        if (on && !this.selection.selected) return;
+        if (on && !this.selection.selected) return; //Bail if no model
         this.activeMode = on;
         this.selection.pickingEnabled = !on;
         this.selection.setGizmoEnabled(!on);
@@ -67,7 +70,7 @@ export class MeasurementController {
         if (!this.seed || this.anchors.length === 0) return;
         const mesh = this.seed.mesh;
         mesh.updateWorldMatrix(true, false);
-        const r = this.ctx.renderer.domElement.getBoundingClientRect();
+        const r = this.ctx.renderer.domElement.getBoundingClientRect(); //projcet 3D anchor to screen px.
         const w = new THREE.Vector3();
         for (const { el, local } of this.anchors) {
             w.copy(local).applyMatrix4(mesh.matrixWorld).project(this.ctx.camera);
@@ -102,20 +105,21 @@ export class MeasurementController {
             -((e.clientY - r.top) / r.height) * 2 + 1,
         );
         this.raycaster.setFromCamera(this.ndc, this.ctx.camera);
+        
         const hit = this.raycaster
             .intersectObject(model, true)
-            .find((h) => (h.object as THREE.Mesh).isMesh && h.face);
+            .find((h) => (h.object as THREE.Mesh).isMesh && h.face); //check if they raycast hit has a mesh and get it triangle, else bail
         if (!hit || !hit.face) return;
 
         const mesh = hit.object as THREE.Mesh;
         const pos = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
         const { a, b, c } = hit.face;
 
-        const va = new THREE.Vector3().fromBufferAttribute(pos, a);
+        const va = new THREE.Vector3().fromBufferAttribute(pos, a); // vertex position in local space.
         const vb = new THREE.Vector3().fromBufferAttribute(pos, b);
         const vc = new THREE.Vector3().fromBufferAttribute(pos, c);
-        const pLocal = mesh.worldToLocal(hit.point.clone());
-        const [w0, w1, w2] = this.barycentric(pLocal, va, vb, vc);
+        const pLocal = mesh.worldToLocal(hit.point.clone()); //hit point to mesh local
+        const [w0, w1, w2] = this.barycentric(pLocal, va, vb, vc); //Get barycentric coordinates as this will survive mesh deformation 
 
         this.disposeGroup();
         this.seed = { mesh, a, b, c, w0, w1, w2 };
@@ -266,7 +270,8 @@ export class MeasurementController {
     }
 
     private barycentric(
-        p: THREE.Vector3,
+        p: THREE.Vector3, //hit point in mesh local
+        //weights
         a: THREE.Vector3,
         b: THREE.Vector3,
         c: THREE.Vector3,

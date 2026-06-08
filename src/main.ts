@@ -10,23 +10,28 @@ import { ExtrudeController } from './features/ExtrudeController';
 import { TextureController } from './features/TextureController';
 import { MeasurementController } from './features/MeasurementController';
 
-
+//Gets the canvas and builds the infrastructure
 const canvas=document.querySelector<HTMLCanvasElement>('#scene')!;
 const ctx=new SceneContext(canvas);
 const world=createScene(ctx.scene);
 const panel=new ControlPanel();
 
 const timer=new THREE.Timer();
-
+// Instantiate all feature controllers 
 const selectionCont=new SelectionController(ctx);
 const textureCont=new TextureController(selectionCont);
 const extrudeCont=new ExtrudeController(ctx,selectionCont);
 const measureCont=new MeasurementController(ctx,selectionCont);
+
+//Cross wiring to update textures and measurements after "deformation"
 extrudeCont.onDeform=(model)=>{
     textureCont.reproject(model);
     measureCont.refresh(model);
 };
+
 const modelLoader=new ModelLoader(ctx.scene);
+
+//Instantiating control panel UI buttons
 const importButton=panel.addButton("Import 3D Model",async()=>{
     const file=await pickFile('.glb,.gltf');
     if(!file) return;
@@ -78,6 +83,7 @@ measureCont.onModeChange=(on)=>{
     measureButton.textContent=on?"Measuring… (Esc)":"Measure";
 };
 
+//updates control panel interactability based on whether or not there is a selection
 selectionCont.onChange=(sel)=>{
     deleteButton.disabled=sel===null;
     textureButton.disabled=sel===null;
@@ -89,10 +95,10 @@ selectionCont.onChange=(sel)=>{
         measureCont.clear();
     }
 };
-
+//render loop 
 ctx.renderer.setAnimationLoop((time)=>{
     timer.update(time);
     world.update(timer.getDelta());
-    measureCont.update();
-    ctx.render();
+    measureCont.update(); // reposition labels in screen space
+    ctx.render(); //controls.update()+renderer.render()
 });

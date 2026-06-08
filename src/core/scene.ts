@@ -4,7 +4,7 @@ import { sceneConfig } from './config';
 export interface World{
     update(delta:number):void;
 }
-
+//takes the scene from scene context and populates it with BG, lights etc
 export function createScene(scene:THREE.Scene):World{
 
     const background=sceneConfig.backgroundColor;
@@ -30,8 +30,8 @@ function makeAxisLine(color: number, axis: 'x'|'z'): THREE.Line{
 
     const half=15;
     const y=0.002;
-    const a=new THREE.Vector3(axis==='x'? -half:0,y,axis==='z'?half:0);
-    const b=new THREE.Vector3(axis==='x'? -half:0,y,axis==='z'?half:0);
+    const a=new THREE.Vector3(axis==='x'? -half:0,y,axis==='z'? -half:0);
+    const b=new THREE.Vector3(axis==='x'?  half:0,y,axis==='z'?  half:0);
 
     const geometry=new THREE.BufferGeometry().setFromPoints([a,b]);
     const material=new THREE.LineBasicMaterial({color})
