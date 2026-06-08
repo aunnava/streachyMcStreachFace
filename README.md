@@ -4,12 +4,25 @@ A browser-based 3D model editor built with [Three.js](https://threejs.org/) and 
 
 ## Prerequisites
 
-- **Node.js 20.19+** (or 22.12+) — required by Vite 8. Check with `node -v`. Get it from [nodejs.org](https://nodejs.org/).
-- **npm** (ships with Node).
+This project pins **Node.js 22.12.0** (recorded in [`.nvmrc`](.nvmrc)). It's the lowest LTS version Vite 8 supports.
+
+The easiest way to install that exact version is with [nvm](https://github.com/nvm-sh/nvm):
+
+```bash
+nvm install   # reads .nvmrc and installs Node 22.12.0
+nvm use       # switches the current shell to it
+```
+
+If you don't use nvm, install Node **22.12.0** directly from [nodejs.org](https://nodejs.org/) (npm ships with it). Verify with:
+
+```bash
+node -v       # should print v22.12.0
+```
 
 ## Setup & run
 
 ```bash
+nvm use          # ensure the pinned Node version (skip if not using nvm)
 npm install      # install dependencies
 npm run dev      # start the dev server
 ```
